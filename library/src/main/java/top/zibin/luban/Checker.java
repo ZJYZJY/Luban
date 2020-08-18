@@ -1,7 +1,11 @@
 package top.zibin.luban;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -143,16 +147,38 @@ enum Checker {
       BitmapFactory.Options options = new BitmapFactory.Options();
       options.inJustDecodeBounds = true;
       BitmapFactory.decodeStream(input.open(), null, options);
-      return options.outMimeType.replace("image/", ".");
+      return "." + MimeTypeMap.getSingleton().getExtensionFromMimeType(options.outMimeType);
     } catch (Exception e) {
       return JPG;
     }
   }
 
-  boolean needCompress(int leastCompressSize, String path) {
+  boolean needCompress(Context context, int leastCompressSize, InputStreamProvider provider) {
     if (leastCompressSize > 0) {
-      File source = new File(path);
-      return source.exists() && source.length() > (leastCompressSize << 10);
+      if (provider instanceof UriAdapter) {
+        Cursor cursor = null;
+        try {
+          cursor = context.getContentResolver().query(provider.getUri(), new String[]{MediaStore.MediaColumns.SIZE},
+                  null, null, null);
+          if (cursor != null && cursor.moveToFirst()) {
+            long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE));
+            return size > (leastCompressSize << 10);
+          } else {
+            return false;
+          }
+        } catch (Exception e) {
+          return false;
+        } finally {
+          if (cursor != null) {
+            cursor.close();
+          }
+        }
+      } else if (provider instanceof FileAdapter) {
+        File source = new File(provider.getPath());
+        return source.exists() && source.length() > (leastCompressSize << 10);
+      } else {
+        return false;
+      }
     }
     return true;
   }
