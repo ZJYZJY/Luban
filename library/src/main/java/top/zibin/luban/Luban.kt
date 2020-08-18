@@ -146,7 +146,7 @@ class Luban private constructor(builder: Builder) : Handler.Callback {
     class Builder internal constructor(private val context: Context) {
         var mTargetDir: String? = null
         var focusAlpha = false
-        var mLeastCompressSize = 500
+        var mLeastCompressSize = 100
         var mRenameListener: OnRenameListener? = null
         var mCompressListener: OnCompressListener? = null
         var mCompressionPredicate: CompressionPredicate? = null
@@ -220,7 +220,7 @@ class Luban private constructor(builder: Builder) : Handler.Callback {
         /**
          * do not compress when the origin image file size less than one value
          *
-         * @param size the value of file size, unit KB, default 500K
+         * @param size the value of file size, unit KB, default 100K
          */
         fun ignoreBy(size: Int): Builder {
             mLeastCompressSize = size
