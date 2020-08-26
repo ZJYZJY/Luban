@@ -7,8 +7,4 @@ import androidx.core.content.FileProvider
  * @since 2020/08/18
  * Description:
  */
-class LubanProvider : FileProvider() {
-    companion object {
-        const val AUTHORITY = "top.zibin.luban.fileprovider"
-    }
-}
+class LubanProvider : FileProvider()

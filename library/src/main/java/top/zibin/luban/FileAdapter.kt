@@ -30,7 +30,7 @@ internal class FileAdapter(
 
     override fun getUri(): Uri {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            FileProvider.getUriForFile(context, LubanProvider.AUTHORITY, file)
+            FileProvider.getUriForFile(context, "${context.packageName}.lubanprovider", file)
         } else {
             Uri.fromFile(file)
         }
